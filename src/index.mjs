@@ -1,27 +1,26 @@
 import express from "express";
+import dotenv from "dotenv";
+import swaggerUi from "swagger-ui-express";
+import specs from "./config/swagger.mjs";
+import userRoutes from "./routes/userRoutes.mjs";
+import { connectDB } from "./config/db.mjs";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const mockUsers = [
-  { id: 1, name: "John Doe" },
-  { id: 2, name: "Jane Doe" },
-];
 
-app.get("/", (req, res) => {
-  res.status(201).send({ mgd: "Hello World!" });
-});
+// Middleware
+app.use(express.json());
 
-app.get(`/api/users`, (req, res) => {
-  res.send(mockUsers);
-});
+// Routes
+app.use("/api/users", userRoutes);
 
-//route parameters
-app.get(`/api/users/:id`, (req, res) => {
-  console.log(req.params);
-});
+// Serve Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
+// Start the server
 app.listen(PORT, () => {
+  connectDB;
   console.log(`Server is running on port ${PORT}`);
 });
-
-//localhost:3000
